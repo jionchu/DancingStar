@@ -16,7 +16,6 @@ import java.util.List;
 public class SaveDanceReqDto {
     private String title;
     private String path;
-    private List<String> accuracytTimeList;
-
+    private List<String> accuracyTimeList;
 
 }

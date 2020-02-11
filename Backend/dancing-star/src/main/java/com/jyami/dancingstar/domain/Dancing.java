@@ -3,6 +3,8 @@ package com.jyami.dancingstar.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
@@ -13,14 +15,16 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(collation = "dancing")
 public class Dancing {
-    private Long id;
+    @Id
+    private String id;
     private String title;
     private String artist;
     private String albumImage = null; // 일단은 Null
     private String videoPath;
-    private List<DancingSpots> AccuracySpots;
-    private List<DancingSpots> ConsistencySpots;
+    private List<DancingSpots> accuracySpots;
+    private List<DancingSpots> consistencySpots;
 
 
 }
