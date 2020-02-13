@@ -95,9 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 if(danceTitle.equals(""))
                     Toast.makeText(MainActivity.this, "노래를 선택해주세요.", Toast.LENGTH_SHORT).show();
                 else {
-                    Intent intent = new Intent(MainActivity.this, ResultActivity.class);
-
-                    //Intent intent = new Intent(MainActivity.this,DanceActivity.class);
+                    Intent intent = new Intent(MainActivity.this,DanceActivity.class);
                     startActivity(intent);
                 }
             }

@@ -77,9 +77,7 @@ public class LearnActivity extends AppCompatActivity {
 
     public void playVideo() {
 
-        String path = "android.resource://org.evolution.dancingstar/";
-
-        //String path = "android.resource://org.evolution.dancingstar/"+R.raw.dance_example;
+        String path = "android.resource://org.evolution.dancingstar/"+R.raw.dance_example;
 
         Uri uri = Uri.parse(path);
 
