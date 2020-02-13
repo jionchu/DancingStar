@@ -15,6 +15,7 @@
         android:text="가시나"
         android:textSize="17dp"
         android:textStyle="bold"
+        android:fontFamily="@font/boldnanumsquareround"
         android:textColor="@color/colorWhite"/>
 
     <TextView
@@ -23,6 +24,7 @@
         android:layout_height="wrap_content"
         android:text="선미"
         android:textSize="15dp"
+        android:fontFamily="@font/lightnanumsquareround"
         android:textColor="@color/colorWhite"/>
 
 </LinearLayout>

@@ -26,9 +26,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.MainActivity" />
-        <activity android:name=".learn.LearnActivity" />
-        <activity android:name=".dance.DanceActivity" />
+
+        <activity android:name=".main.MainActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".learn.LearnActivity"
+            android:screenOrientation="portrait"
+            android:noHistory="true"/>
+
+        <activity android:name=".dance.DanceActivity"
+            android:screenOrientation="portrait"
+            android:noHistory="true"/>
+
+        <activity android:name=".result.ResultActivity"
+            android:screenOrientation="portrait"
+            android:noHistory="true"/>
     </application>
 
 </manifest>
