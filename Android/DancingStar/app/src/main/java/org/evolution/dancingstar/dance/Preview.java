@@ -4,8 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -15,13 +17,17 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaCodec;
+import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -48,11 +54,15 @@ public class Preview extends Thread {
 
     private Size mPreviewSize;
     private Context mContext;
+    private Camera camera;
     private CameraDevice mCameraDevice;
     private CaptureRequest.Builder mPreviewBuilder;
     private CameraCaptureSession mPreviewSession;
     private TextureView mTextureView;
     private String mCameraId = "0";
+    private Surface surface;
+
+    private MediaRecorder mediaRecorder;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray(4);
 
@@ -169,7 +179,9 @@ public class Preview extends Thread {
         }
 
         texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-        Surface surface = new Surface(texture);
+        List<Surface> surfaces = new ArrayList<>();
+        surface = new Surface(texture);
+        surfaces.add(surface);
 
         try {
             mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -219,13 +231,6 @@ public class Preview extends Thread {
             e.printStackTrace();
         }
     }
-
-    private Runnable mDelayPreviewRunnable = new Runnable() {
-        @Override
-        public void run() {
-            startPreview();
-        }
-    };
 
     protected void takePicture() {
         if (null == mCameraDevice) {
@@ -339,6 +344,68 @@ public class Preview extends Thread {
         }
     }
 
+    protected void startRecording(){
+        Log.d(TAG, "startRecording");
+//        camera = Camera.open();
+//        camera.unlock();
+        if(mediaRecorder == null){
+            mediaRecorder = new MediaRecorder();
+        }
+
+        Surface mediaSurface = MediaCodec.createPersistentInputSurface();
+        mediaRecorder.setInputSurface(mediaSurface);
+//        mediaRecorder.setCamera(camera);
+        String recordFilePath = getOutputMediaFile().getAbsolutePath();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+        CamcorderProfile camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+
+        /*if(camcorderProfile.videoFrameWidth > mPreviewSize.getWidth()
+                || camcorderProfile.videoFrameHeight > mPreviewSize.getHeight()) {
+            camcorderProfile.videoFrameWidth = mPreviewSize.getWidth();
+            camcorderProfile.videoFrameHeight = mPreviewSize.getHeight();
+        }*/
+
+        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+//        mediaRecorder.setVideoSize(displayMetrics.widthPixels,displayMetrics.heightPixels);
+        camcorderProfile.videoFrameWidth = displayMetrics.widthPixels;
+        camcorderProfile.videoFrameHeight = displayMetrics.heightPixels;
+        mediaRecorder.setProfile(camcorderProfile);
+        mediaRecorder.setOutputFile(recordFilePath);
+        //mediaRecorder.setOrientationHint(90);
+
+        try {
+            mediaRecorder.prepare();
+            //Surface mediaSurface = mediaRecorder.getSurface();
+            mPreviewBuilder.addTarget(mediaSurface);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mediaRecorder.start();
+    }
+
+    protected void stopRecording(){
+        if (mediaRecorder != null){
+            Log.d(TAG, "stopRecording");
+            try {
+                mediaRecorder.stop();
+                //mediaRecorder.reset();
+                mediaRecorder.release();
+                mediaRecorder = null;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+
+            }
+        }
+    }
+
+    private File getOutputMediaFile(){
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss");
+        File mediaFile = new File(Environment.getExternalStorageDirectory() + "/DCIM", "record_" + dateFormat.format(date) + ".mp4");
+//        File mediaFile = new File(mContext.getFilesDir(), "record_" + dateFormat.format(date) + ".mp4" );
+        return mediaFile;
+    }
 
     public void setSurfaceTextureListener()
     {

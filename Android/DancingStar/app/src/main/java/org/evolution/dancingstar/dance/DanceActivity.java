@@ -1,80 +1,86 @@
 package org.evolution.dancingstar.dance;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Size;
+import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import org.evolution.dancingstar.R;
-import org.evolution.dancingstar.dance.Preview;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DanceActivity extends AppCompatActivity {
 
-
     private VideoView mVideoView;
-    private TextureView mTextureView;
-    private Preview mPreview;
+    private Size previewSize;
+    private CameraDevice cameraDevice;
+    private CaptureRequest.Builder previewBuilder;
+    private CameraCaptureSession previewSession;
+    public static int REQUEST_CAMERA = 1;
 
-    static final int REQUEST_CAMERA = 1;
+    private TextureView textureView;
+    private TextView mTvUser;
+
+    private MediaRecorder mediaRecorder;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dance);
 
-        mVideoView = findViewById(R.id.dance_video_view);
-        mTextureView = findViewById(R.id.dance_texture_view);
-        mPreview = new Preview(this, mTextureView);
-
-        playVideo();
-        TextView tvUser = findViewById(R.id.dance_tv_user);
-        tvUser.setOnClickListener(new View.OnClickListener() {
+        textureView = findViewById(R.id.dance_texture_view);
+        mTvUser = findViewById(R.id.dance_tv_user);
+        mTvUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPreview.takePicture();
+                if (isRecording()) {
+                    stopRecording(true);
+                } else {
+                    startRecording();
+                }
             }
         });
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_CAMERA:
-                for (int i=0;i<permissions.length;i++){
-                    String permission = permissions[i];
-                    int grantResult = grantResults[i];
-                    if (permission.equals(Manifest.permission.CAMERA)) {
-                        if(grantResult == PackageManager.PERMISSION_GRANTED){
-                            mTextureView = findViewById(R.id.learn_texture_view);
-                            mPreview = new Preview(this, mTextureView);
-                        } else {
-                            Toast.makeText(this, "Should have camera permission to run", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-                    }
-                }
-                break;
-        }
+        mVideoView = findViewById(R.id.dance_video_view);
+        playVideo();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mPreview.onResume();
+        startPreview();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mPreview.onPause();
+        stopRecording(false);
     }
 
     public void playVideo() {
@@ -86,7 +92,225 @@ public class DanceActivity extends AppCompatActivity {
         mVideoView.start();
     }
 
-    protected void takePicture() {
-
+    private void startPreview() {
+        if (textureView.isAvailable()) {
+            openCamera();
+        } else {
+            textureView.setSurfaceTextureListener(surfaceTextureListener);
+        }
     }
+
+    private void stopPreview() {
+        if (previewSession != null) {
+            previewSession.close();
+            previewSession = null;
+        }
+        if (cameraDevice != null) {
+            cameraDevice.close();
+            cameraDevice = null;
+        }
+    }
+
+    private void openCamera() {
+        CameraManager manager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
+
+        try {
+            String backCameraId = null;
+
+            for (final String cameraId : manager.getCameraIdList()) {
+                CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
+
+                int cameraOrientation = characteristics.get(CameraCharacteristics.LENS_FACING);
+
+                if (cameraOrientation == CameraCharacteristics.LENS_FACING_FRONT) {
+                    backCameraId = cameraId;
+                    break;
+                }
+            }
+
+            if (backCameraId == null) {
+                return;
+            }
+
+            CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics(backCameraId);
+
+            StreamConfigurationMap streamConfigurationMap = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
+            previewSize = streamConfigurationMap.getOutputSizes(SurfaceTexture.class)[0];
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+
+            manager.openCamera(backCameraId, deviceStateCallback, null);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showPreview() {
+        SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
+        Surface surface = new Surface(surfaceTexture);
+
+        try {
+            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            previewBuilder.addTarget(surface);
+
+            cameraDevice.createCaptureSession(Arrays.asList(surface), captureStateCallback, null);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updatePreview() {
+        try {
+            previewSession.setRepeatingRequest(previewBuilder.build(), null, null);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isRecording() {
+        return mediaRecorder != null;
+    }
+
+    private void startRecording() {
+        mTvUser.setText("중지");
+
+        if (mediaRecorder == null) {
+            mediaRecorder = new MediaRecorder();
+        }
+
+        String recordFilePath = getOutputMediaFile().getAbsolutePath();
+
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+
+        CamcorderProfile camcorderProfile
+                = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+
+        if (camcorderProfile.videoFrameWidth > previewSize.getWidth()
+                || camcorderProfile.videoFrameHeight > previewSize.getHeight()) {
+            camcorderProfile.videoFrameWidth = previewSize.getWidth();
+            camcorderProfile.videoFrameHeight = previewSize.getHeight();
+        }
+
+        mediaRecorder.setProfile(camcorderProfile);
+        mediaRecorder.setOutputFile(recordFilePath);
+        mediaRecorder.setOrientationHint(270);
+
+        try {
+            mediaRecorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        List<Surface> surfaces = new ArrayList<>();
+
+        SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
+        Surface previewSurface = new Surface(surfaceTexture);
+        surfaces.add(previewSurface);
+
+        Surface mediaRecorderSurface = mediaRecorder.getSurface();
+        surfaces.add(mediaRecorderSurface);
+
+        try {
+            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+
+            previewBuilder.addTarget(previewSurface);
+            previewBuilder.addTarget(mediaRecorderSurface);
+
+            cameraDevice.createCaptureSession(surfaces, captureStateCallback, null);
+
+            mediaRecorder.start();
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopRecording(boolean showPreview) {
+        mTvUser.setText("녹화");
+
+        stopPreview();
+
+        if (mediaRecorder != null) {
+            mediaRecorder.stop();
+            mediaRecorder.reset();
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
+
+        if (showPreview) {
+            startPreview();
+        }
+    }
+
+    private File getOutputMediaFile(){
+        String recordPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        File mediaFile = new File(recordPath + File.separator + "record.mp4");
+        return mediaFile;
+    }
+
+    private TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            openCamera();
+        }
+
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height)
+        {
+
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            return false;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+        }
+    };
+
+    private CameraDevice.StateCallback deviceStateCallback = new CameraDevice.StateCallback() {
+
+        @Override
+        public void onOpened(CameraDevice camera) {
+            cameraDevice = camera;
+            showPreview();
+        }
+
+        @Override
+        public void onClosed(@NonNull CameraDevice camera) {
+            super.onClosed(camera);
+            stopRecording(false);
+        }
+
+        @Override
+        public void onDisconnected(CameraDevice camera) {
+
+        }
+
+        @Override
+        public void onError(CameraDevice camera, int error) {
+
+        }
+    };
+
+    private CameraCaptureSession.StateCallback captureStateCallback = new CameraCaptureSession.StateCallback() {
+
+        @Override
+        public void onConfigured(CameraCaptureSession session) {
+            previewSession = session;
+            updatePreview();
+        }
+
+        @Override
+        public void onConfigureFailed(CameraCaptureSession session) {
+
+        }
+    };
 }

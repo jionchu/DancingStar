@@ -31,7 +31,7 @@ public class LearnActivity extends AppCompatActivity {
         mTextureView = findViewById(R.id.learn_texture_view);
         mPreview = new Preview(this, mTextureView);
 
-         TextView tvDancer = findViewById(R.id.learn_tv_dancer);
+        TextView tvDancer = findViewById(R.id.learn_tv_dancer);
         tvDancer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
