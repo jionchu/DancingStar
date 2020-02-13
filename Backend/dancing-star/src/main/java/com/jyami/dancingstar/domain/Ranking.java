@@ -3,8 +3,11 @@ package com.jyami.dancingstar.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * Created by jyami on 2020/02/11
@@ -12,14 +15,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collation = "ranking")
+@Entity(name = "ranking")
 public class Ranking {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;        // PK
-    private Long dancingId; // FK
+
+    private Long dancing_id; // FK
     private String nickName;
     private String userVideoPath;
-    private String registerTime;    // Register Time
+
+    @CreatedDate
+    private LocalDateTime createdDate;
 
     // score
     private Integer faceScore;
