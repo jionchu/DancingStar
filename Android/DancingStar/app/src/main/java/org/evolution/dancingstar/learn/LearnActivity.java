@@ -1,33 +1,37 @@
 package org.evolution.dancingstar.learn;
 
-import android.hardware.Camera;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import org.evolution.dancingstar.R;
 
 public class LearnActivity extends AppCompatActivity {
 
-    private Camera camera;
-    private SurfaceView surfaceView;
-    private SurfaceHolder surfaceHolder;
-    private boolean recording = false;
     private VideoView mVideoView;
+    private TextureView mTextureView;
+    private Preview mPreview;
 
+    static final int REQUEST_CAMERA = 1;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
 
         mVideoView = findViewById(R.id.learn_video_view);
+        mTextureView = findViewById(R.id.learn_texture_view);
+        mPreview = new Preview(this, mTextureView);
 
-        TextView tvDancer = findViewById(R.id.learn_tv_dancer);
+         TextView tvDancer = findViewById(R.id.learn_tv_dancer);
         tvDancer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -35,41 +39,40 @@ public class LearnActivity extends AppCompatActivity {
             }
         });
 
-        /*tvDancer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (recording) {
-                    mediaRecorder.stop();
-                    mediaRecorder.release();
-                    camera.lock();
-                    recording = false;
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                mediaRecorder = new MediaRecorder();
-                                camera.unlock();
-                                mediaRecorder.setCamera(camera);
-                                mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-                                mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-                                mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
-                                mediaRecorder.setOrientationHint(90);
-                                //mediaRecorder.setOutputFile("/sdcard/test.mp4");
-                                mediaRecorder.setPreviewDisplay(surfaceHolder.getSurface());
-                                mediaRecorder.prepare();
-                                mediaRecorder.start();
-                                recording = true;
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                mediaRecorder.release();
-                            }
-                        }
-                    });
-                }
-            }
-        });*/
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_CAMERA:
+                for (int i=0;i<permissions.length;i++){
+                    String permission = permissions[i];
+                    int grantResult = grantResults[i];
+                    if (permission.equals(Manifest.permission.CAMERA)) {
+                        if(grantResult == PackageManager.PERMISSION_GRANTED){
+                            mTextureView = findViewById(R.id.learn_texture_view);
+                            mPreview = new Preview(this, mTextureView);
+                        } else {
+                            Toast.makeText(this, "Should have camera permission to run", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPreview.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPreview.onPause();
     }
 
     public void playVideo() {
@@ -80,4 +83,5 @@ public class LearnActivity extends AppCompatActivity {
         mVideoView.setVideoURI(uri);
         mVideoView.start();
     }
+
 }

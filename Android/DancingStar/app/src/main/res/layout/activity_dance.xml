@@ -23,8 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <SurfaceView
-            android:id="@+id/dance_surface_view"
+        <TextureView
+            android:id="@+id/dance_texture_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"/>
