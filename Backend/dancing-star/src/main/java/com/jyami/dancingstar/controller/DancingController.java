@@ -17,13 +17,13 @@ import java.io.IOException;
 /**
  * Created by jyami on 2020/02/11
  */
-@RestController
+@RestController("dancing")
 @RequiredArgsConstructor
 public class DancingController {
 
     private final DancingService dancingService;
 
-    @RequestMapping(path = "/score", method = RequestMethod.POST,
+    @RequestMapping(path = "/score_test", method = RequestMethod.POST,
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity testFileLocalSave(
             @RequestParam("file") MultipartFile file, @RequestParam("nickName") String nickName,

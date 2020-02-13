@@ -19,20 +19,20 @@ import java.util.List;
 /**
  * Created by jyami on 2020/02/11
  */
-@RestController
+@RestController("ranking")
 @RequiredArgsConstructor
 public class RankingController {
 
     private final RankingService rankingService;
 
-    @GetMapping("/ranking")
+    @GetMapping("")
     public ResponseEntity getTop10Ranking() {
         List<RankingListResDto> rankingList = rankingService.getRankingList();
         ResponseDto<List<RankingListResDto>> ranking = ResponseDto.of(HttpStatus.OK, "ranking top 10 조회", rankingList);
         return ResponseEntity.ok().body(ranking);
     }
 
-    @PostMapping("/ranking")
+    @PostMapping("")
     public ResponseEntity saveTop10Ranking(@RequestBody RankingSaveReqDto rankingSaveReqDto){
         rankingService.saveRankingList(rankingSaveReqDto);
         ResponseDto registerRanking = ResponseDto.of(HttpStatus.OK, "ranking 등록 완료");

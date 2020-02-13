@@ -20,11 +20,10 @@ import java.io.IOException;
 /**
  * Created by jyami on 2020/02/11
  */
-@RestController
+@RestController("admin")
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final NcloudAPIService ncloudAPIService;
     private final DancingService dancingService;
 
     @PostMapping("newDancing")
@@ -32,16 +31,6 @@ public class AdminController {
         Dancing dancing = dancingService.saveDancingDataFromVideo(saveOriginDanceReqDto);//dancing.mp4;
         ResponseDto<Dancing> responseDto = ResponseDto.of(HttpStatus.OK, saveOriginDanceReqDto.getTitle() + "DB 저장 완료", dancing);
         return ResponseEntity.ok().body(responseDto);
-    }
-
-
-    //TODO : DEL
-    @GetMapping("test")
-    public ResponseEntity getPose() {
-        JsonNode face = ncloudAPIService.callFaceRecognition("static/dance.jpeg");
-        JsonNode pose = ncloudAPIService.callPoseEstimation("static/dance.jpeg");
-
-        return ResponseEntity.ok(face.toString() + pose.toString());
     }
 
 }
