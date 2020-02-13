@@ -84,6 +84,7 @@ public class DanceActivity extends AppCompatActivity {
     }
 
     public void playVideo() {
+
         String path = "android.resource://org.evolution.dancingstar/"+R.raw.dance_example;
 
         Uri uri = Uri.parse(path);
