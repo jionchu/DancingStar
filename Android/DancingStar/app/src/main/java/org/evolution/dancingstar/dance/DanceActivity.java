@@ -2,6 +2,7 @@ package org.evolution.dancingstar.dance;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import org.evolution.dancingstar.R;
+import org.evolution.dancingstar.result.ResultActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -245,6 +247,11 @@ public class DanceActivity extends AppCompatActivity {
         if (showPreview) {
             startPreview();
         }
+
+        UploadVideo.uploadFile("");
+
+        Intent intent = new Intent(this,ResultActivity.class);
+        startActivity(intent);
     }
 
     private File getOutputMediaFile(){

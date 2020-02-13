@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         mBtnDance = findViewById(R.id.main_btn_dance);
 
         mDanceList = new ArrayList<>();
-        mDanceList.add(new Dance("아무노래","지코(ZICO)",R.drawable.album_cover_gasina));
+        mDanceList.add(new Dance("달라달라","ITZY",R.drawable.album_cover_dalladalla));
         mDanceList.add(new Dance("가시나","선미",R.drawable.album_cover_gasina));
         mDanceList.add(new Dance("CHEER UP","트와이스(TWICE)",R.drawable.album_cover_cheer_up));
         mDanceList.add(new Dance("Psycho","레드벨벳",R.drawable.album_cover_psycho));

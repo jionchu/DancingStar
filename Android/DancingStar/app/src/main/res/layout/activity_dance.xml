@@ -21,6 +21,14 @@
         android:paddingHorizontal="15dp"
         android:paddingVertical="5dp"/>
 
+    <ProgressBar
+        android:id="@+id/dance_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/ProgressBar"
+        android:paddingVertical="5dp"
+        android:paddingHorizontal="10dp"/>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
