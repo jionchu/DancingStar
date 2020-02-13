@@ -3,10 +3,6 @@ package com.jyami.dancingstar.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -15,18 +11,14 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "ranking")
 public class Ranking {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;        // PK
 
     private Long dancing_id; // FK
     private String nickName;
     private String userVideoPath;
 
-    @CreatedDate
     private LocalDateTime createdDate;
 
     // score

@@ -33,7 +33,9 @@ public class DancingErrorHandler extends DefaultResponseErrorHandler {
 
         if (statusCode.is4xxClientError()) {
             String errorMessage = String.format("[4xxClient Exception] %s", response.getRawStatusCode());
-            log.error(errorMessage);
+            log.error(String.valueOf(response.getBody()));
+            log.error(String.valueOf(response.getRawStatusCode()));
+            log.error(String.valueOf(response.getStatusCode()));
             throw new ClientException(errorMessage);
         }
 

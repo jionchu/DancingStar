@@ -32,15 +32,15 @@ public class NcloudRestTemplateConfig {
         log.debug("for pos restTemplate");
         RestTemplateBuilder danceRestTemplateBuilder = new RestTemplateBuilder().errorHandler(new DancingErrorHandler());
 
-        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
+        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
         interceptors.add(new NcloudHeaderInterceptor());
 
         RestTemplate restTemplate = danceRestTemplateBuilder
-                .setConnectTimeout(ONE_SEC)
-                .setReadTimeout(TWO_SEC)
+//                .setConnectTimeout(ONE_SEC)
+//                .setReadTimeout(TWO_SEC)
                 .build();
-        restTemplate.setInterceptors(interceptors);
 
+        restTemplate.setInterceptors(interceptors);
         return restTemplate;
     }
 
