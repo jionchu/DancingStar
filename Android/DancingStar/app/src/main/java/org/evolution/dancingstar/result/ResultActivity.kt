@@ -11,10 +11,32 @@ import org.evolution.dancingstar.main.MainActivity
 
 class ResultActivity : AppCompatActivity() {
 
+    lateinit var rankingAdapter: RankingAdapter
+
+    val ranking = arrayListOf<ranking>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
+        var temp = ranking(nickname = "nickname", score = "203948")
+
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+        ranking.add(temp)
+
+
+        rankingAdapter = RankingAdapter(this, ranking)
+        listview_ranking.adapter = rankingAdapter
 
 
         result_btn_retry.setOnClickListener {
@@ -23,7 +45,6 @@ class ResultActivity : AppCompatActivity() {
         }
 
         result_btn_reselect.setOnClickListener {
-            //  기존 액티비티 죽이기
             var intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
