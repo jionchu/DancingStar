@@ -17,6 +17,7 @@ import org.evolution.dancingstar.learn.Preview;
 
 public class DanceActivity extends AppCompatActivity {
 
+
     private VideoView mVideoView;
     private TextureView mTextureView;
     private Preview mPreview;

@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.evolution.dancingstar">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -13,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,9 +17,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.MainActivity" />
-        <activity android:name=".learn.LearnActivity" />
-        <activity android:name=".dance.DanceActivity" />
+
+        <activity android:name=".main.MainActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".learn.LearnActivity"
+            android:screenOrientation="portrait"
+            android:noHistory="true"/>
+
+        <activity android:name=".dance.DanceActivity"
+            android:screenOrientation="portrait"
+            android:noHistory="true"/>
+
+        <activity android:name=".result.ResultActivity"
+            android:screenOrientation="portrait"
+            android:noHistory="true"/>
     </application>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>
