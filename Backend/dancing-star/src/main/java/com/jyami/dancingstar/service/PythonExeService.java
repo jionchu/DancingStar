@@ -17,9 +17,6 @@ import java.util.Map;
 @Slf4j
 public class PythonExeService {
 
-    @Value("${python.bash}")
-    private String paythonBash;
-
     private static final String BLACK = " ";
 
     public String getImagesFromVideo(String videoPath) throws IOException {
@@ -30,8 +27,17 @@ public class PythonExeService {
         return exePythonProcess(stringBuilder.toString());
     }
 
-    public String getOneImageScore(JsonNode originCall, JsonNode userCall,
-                                   JsonNode originFaceCall, JsonNode userFaceCall) throws IOException {
+    public String getImagesFromVideo(String videoPath, String times) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        String pythonExeFile = "python3 src/main/resources/python/mp4_to_jpeg.py ";
+        stringBuilder.append(pythonExeFile);
+        stringBuilder.append(videoPath); stringBuilder.append(BLACK);
+        stringBuilder.append(times);
+        return exePythonProcess(stringBuilder.toString());
+    }
+
+    public String getOneImageCompareScore(JsonNode originCall, JsonNode userCall,
+                                          JsonNode originFaceCall, JsonNode userFaceCall) throws IOException {
 
         StringBuilder stringBuilder = new StringBuilder();
         String pythonExeFile = "python3 src/main/resources/python/dancing_score.py ";
