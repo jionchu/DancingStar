@@ -13,7 +13,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import org.evolution.dancingstar.R;
-import org.evolution.dancingstar.learn.Preview;
+import org.evolution.dancingstar.dance.Preview;
 
 public class DanceActivity extends AppCompatActivity {
 
@@ -32,11 +32,12 @@ public class DanceActivity extends AppCompatActivity {
         mTextureView = findViewById(R.id.dance_texture_view);
         mPreview = new Preview(this, mTextureView);
 
+        playVideo();
         TextView tvUser = findViewById(R.id.dance_tv_user);
         tvUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playVideo();
+                mPreview.takePicture();
             }
         });
     }
@@ -82,5 +83,9 @@ public class DanceActivity extends AppCompatActivity {
 
         mVideoView.setVideoURI(uri);
         mVideoView.start();
+    }
+
+    protected void takePicture() {
+
     }
 }
