@@ -1,9 +1,12 @@
 package com.jyami.dancingstar.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.jyami.dancingstar.dto.admin.SaveDanceReqDto;
+import com.jyami.dancingstar.domain.Dancing;
+import com.jyami.dancingstar.domain.DancingSpot;
+import com.jyami.dancingstar.dto.ResponseDto;
+import com.jyami.dancingstar.dto.dacing.SaveOriginDanceReqDto;
+import com.jyami.dancingstar.service.DancingService;
 import com.jyami.dancingstar.service.NcloudAPIService;
-import com.jyami.dancingstar.service.PythonExeService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.*;
@@ -22,18 +25,22 @@ import java.io.IOException;
 public class AdminController {
 
     private final NcloudAPIService ncloudAPIService;
-    private final PythonExeService pythonExeService;
+    private final DancingService dancingService;
 
-    @GetMapping("dancing/save")
-    public ResponseEntity saveServiceDancingVideo() throws IOException {
-        pythonExeService.getImagesFromVideo("dancing.mp4");
-        return ResponseEntity.ok().build();
+    @PostMapping("newDancing")
+    public ResponseEntity saveServiceDancingVideo(@RequestBody SaveOriginDanceReqDto saveOriginDanceReqDto) throws IOException {
+        Dancing dancing = dancingService.saveDancingDataFromVideo(saveOriginDanceReqDto);//dancing.mp4;
+        ResponseDto<Dancing> responseDto = ResponseDto.of(HttpStatus.OK, saveOriginDanceReqDto.getTitle() + "DB 저장 완료", dancing);
+        return ResponseEntity.ok().body(responseDto);
     }
 
+
+    //TODO : DEL
     @GetMapping("test")
     public ResponseEntity getPose() {
         JsonNode face = ncloudAPIService.callFaceRecognition("static/dance.jpeg");
         JsonNode pose = ncloudAPIService.callPoseEstimation("static/dance.jpeg");
+
         return ResponseEntity.ok(face.toString() + pose.toString());
     }
 

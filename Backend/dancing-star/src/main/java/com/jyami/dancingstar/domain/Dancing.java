@@ -1,8 +1,11 @@
 package com.jyami.dancingstar.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
@@ -13,17 +16,18 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Document(collection = "dancing")
 public class Dancing {
 
-    private Long dancingId;
+    @Id
+    private String dancingId;
     private String title;
     private String artist;
-    private String albumImage = null; // 일단은 Null
+    private String albumImage;
     private String videoPath;
+    private String frameNumbers;
 
-    private List<DancingSpot> dancingSpots;
-
-    private List<AccuracySpot> accuracySpots;
-
-
+    private List<DancingSpot> consistencySpot;
+    private List<DancingSpot> accuracySpot;
 }
