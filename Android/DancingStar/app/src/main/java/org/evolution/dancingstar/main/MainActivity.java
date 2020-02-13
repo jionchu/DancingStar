@@ -15,6 +15,7 @@ import android.widget.Toast;
 import org.evolution.dancingstar.R;
 import org.evolution.dancingstar.dance.DanceActivity;
 import org.evolution.dancingstar.learn.LearnActivity;
+import org.evolution.dancingstar.result.ResultActivity;
 
 import java.util.ArrayList;
 
