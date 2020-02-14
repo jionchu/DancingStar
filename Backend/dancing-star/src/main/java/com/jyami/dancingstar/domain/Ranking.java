@@ -1,8 +1,12 @@
 package com.jyami.dancingstar.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 
 /**
@@ -11,21 +15,15 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(collection = "ranking")
+@Builder
 public class Ranking {
-
-    private Long id;        // PK
-
-    private Long dancing_id; // FK
+    @Id
+    private String id;        // PK
+    private String dancing_id; // FK
     private String nickName;
     private String userVideoPath;
-
     private LocalDateTime createdDate;
-
     // score
-    private Integer faceScore;
-    private Integer gazeScore;
-    private Integer consistencyScore;
-    private Integer accuracyScore;
-    private Integer comboScore;
     private Integer totalScore;
 }
