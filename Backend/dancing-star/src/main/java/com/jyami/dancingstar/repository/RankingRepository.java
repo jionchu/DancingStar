@@ -9,7 +9,7 @@ import java.util.List;
  * Created by jyami on 2020/02/14
  */
 public interface RankingRepository extends MongoRepository<Ranking, String> {
-    List<Ranking> findAllByOrderByTotalScore();
+    List<Ranking> findAllByOrderByTotalScoreDesc();
 
 //    List<Ranking> findTopBy10OrderByTotalScore();
 

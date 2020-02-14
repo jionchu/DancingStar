@@ -34,8 +34,8 @@ public class PythonExeService {
         return exePythonProcess(stringBuilder.toString());
     }
 
-    public String getOneImageCompareScore(JsonNode originCall, JsonNode userCall,
-                                          JsonNode originFaceCall, JsonNode userFaceCall) throws IOException {
+    public String getOneImageCompareScore(Object originCall, Object userCall,
+                                          Object originFaceCall, Object userFaceCall) throws IOException {
 
         StringBuilder stringBuilder = new StringBuilder();
         String pythonExeFile = "python3 src/main/resources/python/main.py ";
@@ -55,7 +55,7 @@ public class PythonExeService {
 
 //        ProcessBuilder pb = new ProcessBuilder(paythonBash ,pythonProcess);
 
-        log.info("python start");
+        log.info("python start : " + pythonProcess);
 //        Process process = pb.start();
 
         Process process = Runtime.getRuntime().exec(pythonProcess);
@@ -64,13 +64,10 @@ public class PythonExeService {
 
         BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
-        stringBuilder.append("input\n");
         String s;
         while((s = stdInput.readLine())!=null){
-            stringBuilder.append(s);
+            stringBuilder.append(s+'\n');
         }
-
-        stringBuilder.append("error\n");
         String e;
         while((e = stdError.readLine())!=null){
             stringBuilder.append(e);

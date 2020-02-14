@@ -15,9 +15,29 @@ public class DancingParsing {
                 .sum();
     }
 
+    public static String parsingImage(String frameNumber){
+        return splitComma(frameNumber)
+                .stream()
+                .map(c -> "src/main/resources/images/image-frame" +c + ".jpg")
+                .collect(Collectors.joining("\n"));
+
+    }
+
+    public static String FrameImage(){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i =0; i<313; i=i+24){
+            stringBuilder.append("src/main/resources/images/image-frame" +i + ".jpg\n");
+        }
+return stringBuilder.toString();
+    }
+
     public static List<String> stringToStringList(String string){
         return Arrays.stream(string.split("\n"))
                 .collect(Collectors.toList());
+    }
+
+    public static String parsingForApi(String string){
+        return string.replace("src/main/resources/","");
     }
 
     public static String getKey(String parsing){
@@ -34,7 +54,7 @@ public class DancingParsing {
     }
 
     public static String getTimeFromPath(String path){
-        return path.replace("images/image-frame","").replace(".jpg","");
+        return path.replace("src/main/resources/images/image-frame","").replace(".jpg","");
     }
 
 }

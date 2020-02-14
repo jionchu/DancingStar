@@ -37,9 +37,38 @@ public class DanceScoreResDto {
         }
 
         return DanceScoreResDto.builder()
-                .faceScore(Integer.parseInt(hashMap.get("h1")))
-                .gazeScore(Integer.parseInt(hashMap.get("h2")))
-                .accuracyScore(Integer.parseInt(hashMap.get("accuracy")))
+                .faceScore(Integer.parseInt(hashMap.get("h1").trim()))
+                .gazeScore(Integer.parseInt(hashMap.get("h2").trim()))
+                .accuracyScore(Integer.parseInt(hashMap.get("accuracy").trim()))
+                .build();
+    }
+
+    public static DanceScoreResDto getFromConsistency(String string) {
+        HashMap<String,String> hashMap = new HashMap();
+
+        for(String s : stringToStringList(string)){
+            String value = getValue(s);
+            String key = getKey(s);
+            hashMap.put(key, value);
+        }
+
+        return DanceScoreResDto.builder()
+                .faceScore(Integer.parseInt(hashMap.get("consistency").trim()))
+                .build();
+    }
+
+    public static DanceScoreResDto makeConsistency(int consistencyScore, int comboScore, DanceScoreResDto danceScoreResDto){
+        danceScoreResDto.comboScore = comboScore;
+        danceScoreResDto.consistencyScore = consistencyScore;
+
+        return danceScoreResDto;
+    }
+
+    public static DanceScoreResDto makeAccuracy(int h1, int h2, int acc){
+        return DanceScoreResDto.builder()
+                .accuracyScore(acc)
+                .faceScore(h1)
+                .gazeScore(h2)
                 .build();
     }
 }

@@ -2,7 +2,7 @@ import numpy as np
 import sys
 import cv2
 import requests
-from calculate import *
+import json
 import argparse
 from numpy.linalg import norm
 
@@ -17,17 +17,20 @@ def eu_dist(p1, p2):
 
 
 def angle(p1, origin, p2):
-    p1 = np.array(p1)
-    o = np.array(origin)
-    p2 = np.array(p2)
-    
-    op1 = p1 - o
-    op2 = p2 - o
-    cosine = np.dot(op1, op2) / (norm(op1)*norm(op2))
- 
-    
-    # v1, v2 should be unit vector
-    return np.degrees(np.arccos(cosine))
+    try:
+        p1 = np.array(p1)
+        o = np.array(origin)
+        p2 = np.array(p2)
+        
+        op1 = p1 - o
+        op2 = p2 - o
+        cosine = np.dot(op1, op2) / (norm(op1)*norm(op2))
+     
+        
+        # v1, v2 should be unit vector
+        return np.degrees(np.arccos(cosine))
+    except TypeError:
+        return 0
 
 def normalize(vector):
     normal = []
@@ -55,7 +58,8 @@ def distance(userConfs, dnPointsNorm, userPointsNorm, nPoints=18):
             conf_sum += userConfs[i]
         except TypeError:
             continue
-    
+    if dist == 0:
+        return 20
     return conf_sum / dist
 
 def leg_dist(kp):
@@ -239,10 +243,10 @@ def distance_score(d_armDist, u_armDist, d_legDist, u_legDist):
     return arm_score + leg_score
 
 
-def accuracy(leg_score, arm_score, dist_score):
+def Accuracy(leg_score, arm_score, dist_score):
     return leg_score + arm_score + dist_score
 
-def consistency(similarity):
+def Consistency(similarity):
     return similarity
 
 def hidden1(face1, face2):
@@ -270,8 +274,11 @@ def main(pose1, pose2, face1, face2):
 
    
     # receive dance video api data
-    face = dance_face['faces'][0]['emotion']
-    dance_emotion = face['value']
+    try:
+        face = dance_face['faces'][0]['emotion']
+        dance_emotion = face['value']
+    except IndexError:
+        dance_emotion = None
     personKP = dance_pose['predictions'][0]
     dnConfs = []
     dnPoints = []
@@ -285,8 +292,12 @@ def main(pose1, pose2, face1, face2):
 
             
     # receive user video api data
-    face = user_face['faces'][0]['emotion']
-    user_emotion = face['value']
+    try:
+        face = user_face['faces'][0]['emotion']
+        user_emotion = face['value']
+    except IndexError:
+        user_emotion = None
+   
     personKP = user_pose['predictions'][0]
     userConfs = []
     userPoints = []
@@ -331,13 +342,13 @@ def main(pose1, pose2, face1, face2):
     leg_score = leg_angle_score(d_rightLegAngle, d_leftLegAngle, u_rightLegAngle, u_leftLegAngle)
     arm_score = arm_angle_score(d_rightArmAngle, d_leftArmAngle, u_rightArmAngle, u_leftArmAngle)
     dist_score = distance_score(d_armDist, u_armDist, d_legDist, u_legDist)
-    accuracy = accuracy(leg_score, arm_score, dist_score)
-    consistency = consistency(similarity)
+    accuracy = Accuracy(leg_score, arm_score, dist_score)
+    consistency = Consistency(similarity)
 
-    print("h1:", h1)
-    print("h2:", h2)
-    print("accuracy:", accuracy)
-    print("consistency:", consistency)
+    print("h1 : ", h1)
+    print("h2 : ", h2)
+    print("accuracy : ", accuracy)
+    print("consistency : ", consistency)
     
         
 if __name__ == '__main__':

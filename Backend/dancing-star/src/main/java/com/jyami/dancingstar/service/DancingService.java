@@ -1,8 +1,10 @@
 package com.jyami.dancingstar.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jyami.dancingstar.domain.Dancing;
 import com.jyami.dancingstar.domain.DancingSpot;
+import com.jyami.dancingstar.dto.dacing.DanceScoreReqDto;
 import com.jyami.dancingstar.dto.dacing.DanceScoreResDto;
 import com.jyami.dancingstar.dto.dacing.SaveDanceReqDto;
 import com.jyami.dancingstar.dto.dacing.SaveOriginDanceReqDto;
@@ -10,8 +12,8 @@ import com.jyami.dancingstar.exception.DancingException;
 import com.jyami.dancingstar.exception.PythonException;
 import com.jyami.dancingstar.repository.DancingRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.jyami.dancingstar.dto.dacing.DanceScoreResDto.getFromAccuracy;
+import static com.jyami.dancingstar.dto.dacing.DanceScoreResDto.makeAccuracy;
+import static com.jyami.dancingstar.dto.dacing.DanceScoreResDto.makeConsistency;
 import static com.jyami.dancingstar.parsing.DancingParsing.*;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
@@ -41,6 +44,67 @@ public class DancingService {
 
     private static String USER_VIDEO = "src/main/resources/user_video/";
 
+    public DanceScoreResDto  getDancingScore() throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        Dancing originalDancing = mapper.readValue(new File("src/main/resources/static/mock.json"), Dancing.class);
+
+        String filePath = USER_VIDEO + "user_video.mp4";
+
+        SaveDanceReqDto saveDanceReqDto = SaveDanceReqDto.builder()
+                .frameNumbers(originalDancing.getFrameNumbers())
+                .videoPath(filePath)
+                .build();
+
+        Dancing userDancing = getDancingDataFromVideo(saveDanceReqDto);
+
+//        Integer accuracyScoreForCompare = getAccuracyScoreForCompare(userDancing, originalDancing);
+//        Integer consistencyScoreForCompare = getConsistencyScoreForCompare(userDancing, originalDancing);
+
+
+        List<String> accuracyScoreForCompare = getAccuracyScoreForCompare(userDancing, originalDancing);
+        DanceScoreResDto accuracyScore = getAccuracyScore(accuracyScoreForCompare);
+
+        List<String> consistencyScoreForCompare = getConsistencyScoreForCompare(userDancing, originalDancing);
+        DanceScoreResDto consistencyScore = getConsistencyScore(consistencyScoreForCompare, accuracyScore);
+
+        return consistencyScore;
+    }
+
+    private DanceScoreResDto getConsistencyScore(List<String> strings, DanceScoreResDto danceScoreResDto){
+
+        Integer consistency = 0;
+        Integer combo = 0;
+
+        List<DanceScoreResDto> collect = strings.stream()
+                .map(DanceScoreResDto::getFromConsistency)
+                .collect(Collectors.toList());
+        for(DanceScoreResDto d : collect){
+            consistency += d.getConsistencyScore();
+            if(consistency < 10)
+                continue;
+            combo += 100;
+        }
+
+        return makeConsistency(consistency, combo, danceScoreResDto);
+    }
+
+    private DanceScoreResDto getAccuracyScore(List<String> strings){
+        Integer accuracyScore = 5;
+        Integer h1Score = 0;
+        Integer h2Score = 0;
+        List<DanceScoreResDto> collect = strings.stream()
+                .map(DanceScoreResDto::getFromAccuracy)
+                .collect(Collectors.toList());
+        for(DanceScoreResDto d : collect){
+            accuracyScore += d.getAccuracyScore();
+            h1Score += d.getFaceScore();
+            h2Score += d.getGazeScore();
+        }
+
+        return makeAccuracy(h1Score, h2Score, accuracyScore);
+    }
+
     public DanceScoreResDto getDancingScore(MultipartFile file, String nickName, String dancingId) throws IOException {
 
         Dancing originalDancing = dancingRepository.findById(dancingId)
@@ -53,12 +117,15 @@ public class DancingService {
                 .videoPath(filePath)
                 .build();
 
-        Dancing userDacing = getDancingDataFromVideo(saveDanceReqDto);
+        Dancing userDancing = getDancingDataFromVideo(saveDanceReqDto);
 
-        Integer accuracyScoreForCompare = getAccuracyScoreForCompare(userDacing, originalDancing);
-        Integer consistencyScoreForCompare = getConsistencyScoreForCompare(userDacing, originalDancing);
+//        Integer accuracyScoreForCompare = getAccuracyScoreForCompare(userDacing, originalDancing);
+//        Integer consistencyScoreForCompare = getConsistencyScoreForCompare(userDacing, originalDancing);
+        List<String> accuracyScoreForCompare = getAccuracyScoreForCompare(userDancing, originalDancing);
+        List<String> consistencyScoreForCompare = getConsistencyScoreForCompare(userDancing, originalDancing);
 
-        return getAllScore(accuracyScoreForCompare, consistencyScoreForCompare);
+//        return getAllScore(accuracyScoreForCompare, consistencyScoreForCompare);
+        return null;
     }
 
     private DanceScoreResDto getAllScore(int acc, int con){
@@ -82,7 +149,7 @@ public class DancingService {
         return localSaveFile.getPath();
     }
 
-    private Integer getAccuracyScoreForCompare(Dancing userFile, Dancing originFile){
+    private List<String> getAccuracyScoreForCompare(Dancing userFile, Dancing originFile){
         List<DancingSpot> userAccuracySpot = userFile.getAccuracySpot();
         List<DancingSpot> originAccuracySpot = originFile.getAccuracySpot();
 
@@ -94,10 +161,10 @@ public class DancingService {
             accuracyList.add(getScoreForCompare(dancingSpot, dancingSpot1));
         }
 
-        return getTotalScore(accuracyList);
+        return accuracyList;
     }
 
-    private Integer getConsistencyScoreForCompare(Dancing userFile, Dancing originFile){
+    private List<String> getConsistencyScoreForCompare(Dancing userFile, Dancing originFile){
         List<DancingSpot> userConsistencySpot = userFile.getConsistencySpot();
         List<DancingSpot> originConsistencySpot = originFile.getConsistencySpot();
 
@@ -109,7 +176,8 @@ public class DancingService {
             consistencyList.add(getScoreForCompare(dancingSpot, dancingSpot1));
         }
 
-        return  getTotalScore(consistencyList);
+//        return  getTotalScore(consistencyList);
+        return consistencyList;
     }
 
 
@@ -134,35 +202,27 @@ public class DancingService {
         String originVideo = saveDanceReqDto.getVideoPath();
         String frameNumbers = saveDanceReqDto.getFrameNumbers();
 
-        List<DancingSpot> allAccuracyImageScore = getAllAccuracyImageScore(originVideo, frameNumbers);
-        List<DancingSpot> allConsistencyImageScore = getAllConsistencyImageScore(originVideo);
+        List<DancingSpot> allAccuracyImageScore = getAllAccuracyImageResult(originVideo, frameNumbers);
+        List<DancingSpot> allConsistencyImageScore = getAllConsistencyImageResult(originVideo);
 
         return saveDanceReqDto.toDomain(allConsistencyImageScore, allAccuracyImageScore);
     }
 
-    private List<DancingSpot> getAllAccuracyImageScore(String originVideo, String frameNumbers) {
-        splitComma(frameNumbers).stream()
-                .map(x -> {
-                    try {
-                        return pythonExeService.getImagesFromVideo(originVideo, x);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        throw new PythonException(e.getMessage());
-                    }
-                })
-                .map(string -> DanceScoreResDto.getFromAccuracy(string))
+    @SneakyThrows
+    private List<DancingSpot> getAllAccuracyImageResult(String originVideo, String frameNumbers) {
+//        String imagesFromVideo = pythonExeService.getImagesFromVideo(originVideo, frameNumbers);
+        String imagesFromVideo = parsingImage(frameNumbers);
+        return stringToStringList(imagesFromVideo).stream()
+                .map(t -> getOriginDanceData(parsingForApi(t), getTimeFromPath(t)))
                 .collect(Collectors.toList());
-
-        //TODO
-
-        return null;
     }
 
-    private List<DancingSpot> getAllConsistencyImageScore(String originVideo) throws IOException {
-        String imagesFromVideo = pythonExeService.getImagesFromVideo(originVideo); // image 파일들 생성
+    private List<DancingSpot> getAllConsistencyImageResult(String originVideo){
+//        String imagesFromVideo = pythonExeService.getImagesFromVideo(originVideo); // image 파일들 생성
+        String imagesFromVideo = FrameImage();
         List<String> strings = stringToStringList(imagesFromVideo);
         return strings.stream()
-                .map(t -> getOriginDanceData(t, getTimeFromPath(t)))
+                .map(t -> getOriginDanceData(parsingForApi(t), getTimeFromPath(t)))
                 .collect(Collectors.toList());
     }
 
@@ -171,6 +231,7 @@ public class DancingService {
         JsonNode originPoseResult = ncloudAPIService.callPoseEstimation(originFile);
         JsonNode originFaceResult = ncloudAPIService.callFaceRecognition(originFile);
 
+        log.info(originFile + "OKAY");
         return DancingSpot.builder()
                 .faceSpots(originFaceResult)
                 .poseSpots(originPoseResult)
