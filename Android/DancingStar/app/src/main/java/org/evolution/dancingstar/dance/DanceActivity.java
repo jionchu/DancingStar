@@ -20,8 +20,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
@@ -39,6 +39,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+import org.jetbrains.annotations.NotNull;
+import android.support.v7.app.AppCompatActivity;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+
+
 public class DanceActivity extends AppCompatActivity {
 
     private VideoView mVideoView;
@@ -55,6 +66,7 @@ public class DanceActivity extends AppCompatActivity {
     private int progressSeconds, progressMinutes;
     private Thread thread;
     private Handler handler = new Handler();
+    private String BASE_URL = "http://10.83.32.245:8080";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,8 +91,7 @@ public class DanceActivity extends AppCompatActivity {
         progressBar.setMax(minuetes*60+seconds);
 
         progressMinutes = 0;
-        progressSeconds = 0;
-        progressBar.setProgress(progressMinutes * 60 + progressSeconds);
+        progressSeconds = -1;
 
         thread = new Thread(new Runnable() {
             public void run() {
@@ -116,7 +127,50 @@ public class DanceActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        stopRecording(false);
+    }
+
+    public void tryPostVideo(String filepath) {
+        uploadFileOkhttp(filepath, "nickname", "1");
+
+    }
+
+    public void uploadFileOkhttp(String filepath, String nickname, String danceId) {
+
+        File file = new File(filepath);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("nickName", nickname)
+                .addFormDataPart("dancingId", danceId)
+                .addFormDataPart("file",file.getName(), RequestBody.create(file, MediaType.get("video/mpeg")))
+                .build();
+
+        Request request = new Request.Builder()
+                .url(BASE_URL+"/dancing/score_test")
+                .post(requestBody)
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
+                Log.d("okhttp3", "onResponse: code="+response.code());
+
+                Intent intent = new Intent(DanceActivity.this,ResultActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
+                Log.d("okhttp3", "onFailure");
+
+                e.printStackTrace();
+
+            }
+        });
+
+
     }
 
     public void playVideo() {
@@ -212,11 +266,17 @@ public class DanceActivity extends AppCompatActivity {
     }
 
     private void startRecording() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         if (mediaRecorder == null) {
             mediaRecorder = new MediaRecorder();
         }
@@ -227,7 +287,7 @@ public class DanceActivity extends AppCompatActivity {
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
 
         CamcorderProfile camcorderProfile
-                = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+                = CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
 
         if (camcorderProfile.videoFrameWidth > previewSize.getWidth()
                 || camcorderProfile.videoFrameHeight > previewSize.getHeight()) {
@@ -279,16 +339,8 @@ public class DanceActivity extends AppCompatActivity {
             mediaRecorder.release();
             mediaRecorder = null;
         }
+        tryPostVideo(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + "record.mp4");
 
-        /*if (showPreview) {
-            startPreview();
-        }*/
-
-        UploadVideo.uploadFile(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + "record.mp4");
-
-        Intent intent = new Intent(this,ResultActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     private File getOutputMediaFile(){
@@ -331,7 +383,6 @@ public class DanceActivity extends AppCompatActivity {
         @Override
         public void onClosed(@NonNull CameraDevice camera) {
             super.onClosed(camera);
-            stopRecording(false);
         }
 
         @Override
@@ -358,4 +409,5 @@ public class DanceActivity extends AppCompatActivity {
 
         }
     };
+
 }
