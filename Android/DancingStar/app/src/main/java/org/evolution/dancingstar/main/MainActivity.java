@@ -1,7 +1,6 @@
 package org.evolution.dancingstar.main;
 
 import android.content.Intent;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,11 +14,8 @@ import android.widget.Toast;
 
 import org.evolution.dancingstar.R;
 import org.evolution.dancingstar.dance.DanceActivity;
-//import org.evolution.dancingstar.dance.UploadVideo;
 import org.evolution.dancingstar.learn.LearnActivity;
-import org.evolution.dancingstar.result.ResultActivity;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {

@@ -42,8 +42,7 @@ public class LearnActivity extends AppCompatActivity {
         progressBar.setMax(minuetes*60+seconds);
 
         progressMinutes = 0;
-        progressSeconds = 0;
-        progressBar.setProgress(progressMinutes * 60 + progressSeconds);
+        progressSeconds = -1;
 
         thread = new Thread(new Runnable() {
             public void run() {

@@ -32,7 +32,7 @@
                 android:paddingTop="20dp"
                 android:text="Dance List"
                 android:textColor="@color/colorPrimaryDark"
-                android:textSize="40dp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
         </android.support.v7.widget.Toolbar>
@@ -75,6 +75,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="제목"
+                            android:textSize="16dp"
                             android:textStyle="bold"
                             android:textColor="@color/colorBlack"/>
 
@@ -83,6 +84,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="가시나"
+                            android:textSize="16dp"
                             android:layout_marginLeft="5dp"/>
 
                     </LinearLayout>
@@ -96,6 +98,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="가수"
+                            android:textSize="16dp"
                             android:textStyle="bold"
                             android:textColor="@color/colorBlack"/>
 
@@ -104,6 +107,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="선미"
+                            android:textSize="16dp"
                             android:layout_marginLeft="5dp"/>
 
                     </LinearLayout>
@@ -117,6 +121,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="최고점수"
+                            android:textSize="16dp"
                             android:textStyle="bold"
                             android:textColor="@color/colorBlack"/>
 
@@ -125,6 +130,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="99"
+                            android:textSize="16dp"
                             android:layout_marginLeft="5dp"/>
 
                     </LinearLayout>
@@ -138,6 +144,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="1위"
+                            android:textSize="16dp"
                             android:textStyle="bold"
                             android:textColor="@color/colorBlack"/>
 
@@ -146,6 +153,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Nickname"
+                            android:textSize="16dp"
                             android:layout_marginLeft="5dp"/>
 
                     </LinearLayout>
