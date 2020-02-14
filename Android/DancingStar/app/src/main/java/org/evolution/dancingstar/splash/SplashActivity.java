@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import org.evolution.dancingstar.R;
 import org.evolution.dancingstar.main.MainActivity;
+import org.evolution.dancingstar.nickname.nickname;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -23,7 +24,7 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), nickname.class);
                     startActivity(intent);
                     finish();
                 }

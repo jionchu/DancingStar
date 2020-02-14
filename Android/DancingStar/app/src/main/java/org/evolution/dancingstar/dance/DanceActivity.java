@@ -284,7 +284,7 @@ public class DanceActivity extends AppCompatActivity {
             startPreview();
         }*/
 
-        UploadVideo.uploadFile(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + "record.mp4");
+//        UploadVideo.uploadFile(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + "record.mp4");
 
         Intent intent = new Intent(this,ResultActivity.class);
         startActivity(intent);
