@@ -1,9 +1,7 @@
 package com.jyami.dancingstar.controller;
 
 
-import com.jyami.dancingstar.domain.Dancing;
 import com.jyami.dancingstar.dto.ResponseDto;
-import com.jyami.dancingstar.dto.dacing.DanceScoreReqDto;
 import com.jyami.dancingstar.dto.dacing.DanceScoreResDto;
 import com.jyami.dancingstar.dto.ranking.RankingSaveReqDto;
 import com.jyami.dancingstar.service.DancingService;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by jyami on 2020/02/11
@@ -40,37 +37,28 @@ public class DancingController {
         return ResponseEntity.ok().body(dancing);
     }
 
-    @RequestMapping(path = "score", method = RequestMethod.POST,
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @RequestMapping(path = "score", method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity getUserScore(
             @RequestParam("file") MultipartFile file, @RequestParam("nickName") String nickName,
             @RequestParam("dancingId") String dancingId) throws IOException {
 
         DanceScoreResDto dancingScore = dancingService.getDancingScore(file, nickName, dancingId);
-
         ResponseDto<DanceScoreResDto> score = ResponseDto.of(HttpStatus.OK, "score 계산 완료", dancingScore);
         return ResponseEntity.ok().body(score);
     }
 
-    @PostMapping(path = "score_mock")
-    public ResponseEntity getUserScore(@RequestBody DanceScoreReqDto danceScoreReqDto) throws IOException {
-
-        String nickName = danceScoreReqDto.getNickName();
-
+    @GetMapping(path = "score_mock/{nickName}")
+    public ResponseEntity getUserScore(@PathVariable String nickName) throws IOException {
         DanceScoreResDto dancingScore = dancingService.getDancingScore();
-
         RankingSaveReqDto rankingSaveReqDto = RankingSaveReqDto.builder()
                 .dancingId("5e46368de20ac15c8b8ac2d0")
                 .totalScore(dancingScore.getTotalScore())
                 .nickName(nickName)
                 .userVideoPath("")
                 .build();
-
         rankingService.saveRankingList(rankingSaveReqDto);
 
-
-        ResponseDto<DanceScoreResDto> score = ResponseDto.of(HttpStatus.OK, "score 계산 완료", dancingScore);
-
+        ResponseDto<DanceScoreResDto> score = ResponseDto.of(HttpStatus.OK, "score 계산 완료 + 랭킹 등록", dancingScore);
         return ResponseEntity.ok().body(score);
     }
 
