@@ -66,7 +66,7 @@ public class DanceActivity extends AppCompatActivity {
     private int progressSeconds, progressMinutes;
     private Thread thread;
     private Handler handler = new Handler();
-    private String BASE_URL = "http://10.83.32.245:8080";
+    private String BASE_URL = "http://10.83.32.245:9090";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
