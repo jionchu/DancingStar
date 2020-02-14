@@ -12,5 +12,10 @@
 ###### 개발언어 : Python, Java, Kotlin
 
 
-####### 영상출처 : 
-####### - [ITZY(있지) "달라달라(DALLA DALLA)" dance cover by Vis](https://www.youtube.com/watch?v=BwqrAn8YSpA)
+
+
+
+
+-----------------------------------
+###### 영상출처 : 
+######  - [ITZY(있지) "달라달라(DALLA DALLA)" dance cover by Vis](https://www.youtube.com/watch?v=BwqrAn8YSpA)
