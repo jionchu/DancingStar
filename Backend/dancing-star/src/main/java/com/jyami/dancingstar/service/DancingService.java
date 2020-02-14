@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.jyami.dancingstar.dto.dacing.DanceScoreResDto.getFromAccuracy;
 import static com.jyami.dancingstar.parsing.DancingParsing.*;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
@@ -139,12 +140,22 @@ public class DancingService {
         return saveDanceReqDto.toDomain(allConsistencyImageScore, allAccuracyImageScore);
     }
 
-    private List<DancingSpot> getAllAccuracyImageScore(String originVideo, String frameNumbers) throws IOException {
-        String imagesFromVideo = pythonExeService.getImagesFromVideo(originVideo, frameNumbers);// image 파일들 생성
-        List<String> strings = stringToStringList(imagesFromVideo);
-        return strings.stream()
-                .map(t -> getOriginDanceData(t, getTimeFromPath(t)))
+    private List<DancingSpot> getAllAccuracyImageScore(String originVideo, String frameNumbers) {
+        splitComma(frameNumbers).stream()
+                .map(x -> {
+                    try {
+                        return pythonExeService.getImagesFromVideo(originVideo, x);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new PythonException(e.getMessage());
+                    }
+                })
+                .map(string -> DanceScoreResDto.getFromAccuracy(string))
                 .collect(Collectors.toList());
+
+        //TODO
+
+        return null;
     }
 
     private List<DancingSpot> getAllConsistencyImageScore(String originVideo) throws IOException {

@@ -2,13 +2,11 @@ package com.jyami.dancingstar.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
 
 /**
  * Created by jyami on 2020/02/13
@@ -40,7 +38,7 @@ public class PythonExeService {
                                           JsonNode originFaceCall, JsonNode userFaceCall) throws IOException {
 
         StringBuilder stringBuilder = new StringBuilder();
-        String pythonExeFile = "python3 src/main/resources/python/dancing_score.py ";
+        String pythonExeFile = "python3 src/main/resources/python/main.py ";
 
         stringBuilder.append(pythonExeFile);
         stringBuilder.append(originCall); stringBuilder.append(BLACK);

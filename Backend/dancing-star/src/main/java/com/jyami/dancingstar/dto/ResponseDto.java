@@ -18,7 +18,7 @@ import java.util.Optional;
 public class ResponseDto<T> {
 
     public static final ResponseDto FAIL_DEFAULT_RES
-            = ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버에");
+            = ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버에러");
     private int status;
     private String message;
     private T response;
