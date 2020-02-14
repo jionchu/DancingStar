@@ -16,6 +16,7 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -25,6 +26,7 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -45,11 +47,14 @@ public class DanceActivity extends AppCompatActivity {
     private CaptureRequest.Builder previewBuilder;
     private CameraCaptureSession previewSession;
     public static int REQUEST_CAMERA = 1;
-
     private TextureView textureView;
     private TextView mTvUser;
 
     private MediaRecorder mediaRecorder;
+    private ProgressBar progressBar;
+    private int progressSeconds, progressMinutes;
+    private Thread thread;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,20 +62,49 @@ public class DanceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dance);
 
         textureView = findViewById(R.id.dance_texture_view);
+        mVideoView = findViewById(R.id.dance_video_view);
+        progressBar = findViewById(R.id.dance_progress_bar);
+
         mTvUser = findViewById(R.id.dance_tv_user);
         mTvUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isRecording()) {
-                    stopRecording(true);
-                } else {
-                    startRecording();
+                if(!isRecording())
+                   startRecording();
+            }
+        });
+        final long duration = ((long)16000);
+        final int minuetes = (int) (duration / 1000 / 60);
+        final int seconds = (int) ((duration / 1000) % (60));
+        progressBar.setMax(minuetes*60+seconds);
+
+        progressMinutes = 0;
+        progressSeconds = 0;
+        progressBar.setProgress(progressMinutes * 60 + progressSeconds);
+
+        thread = new Thread(new Runnable() {
+            public void run() {
+                while ((progressMinutes * 60 + progressSeconds) < (minuetes * 60 + seconds)) {
+                    progressSeconds += 1;
+                    if (progressSeconds == 60) {
+                        progressMinutes++;
+                        progressSeconds = 0;
+                    }
+                    handler.post(new Runnable() {
+                        public void run() {
+                            progressBar.setProgress(progressMinutes * 60 + progressSeconds);
+                        }
+                    });
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+                stopRecording(true);
             }
         });
 
-        mVideoView = findViewById(R.id.dance_video_view);
-        playVideo();
     }
 
     @Override
@@ -178,8 +212,11 @@ public class DanceActivity extends AppCompatActivity {
     }
 
     private void startRecording() {
-        mTvUser.setText("중지");
-
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (mediaRecorder == null) {
             mediaRecorder = new MediaRecorder();
         }
@@ -227,31 +264,31 @@ public class DanceActivity extends AppCompatActivity {
             cameraDevice.createCaptureSession(surfaces, captureStateCallback, null);
 
             mediaRecorder.start();
+            playVideo();
+            thread.start();
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
 
     private void stopRecording(boolean showPreview) {
-        mTvUser.setText("녹화");
-
         stopPreview();
 
         if (mediaRecorder != null) {
             mediaRecorder.stop();
-            mediaRecorder.reset();
             mediaRecorder.release();
             mediaRecorder = null;
         }
 
-        if (showPreview) {
+        /*if (showPreview) {
             startPreview();
-        }
+        }*/
 
-        UploadVideo.uploadFile("");
+        UploadVideo.uploadFile(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + "record.mp4");
 
         Intent intent = new Intent(this,ResultActivity.class);
         startActivity(intent);
+        finish();
     }
 
     private File getOutputMediaFile(){

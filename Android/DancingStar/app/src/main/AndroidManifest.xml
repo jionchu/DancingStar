@@ -30,16 +30,13 @@
             android:screenOrientation="portrait"/>
 
         <activity android:name=".learn.LearnActivity"
-            android:screenOrientation="portrait"
-            android:noHistory="true"/>
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".dance.DanceActivity"
-            android:screenOrientation="portrait"
-            android:noHistory="true"/>
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".result.ResultActivity"
-            android:screenOrientation="portrait"
-            android:noHistory="true"/>
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

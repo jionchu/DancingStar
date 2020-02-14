@@ -14,9 +14,6 @@ import android.widget.VideoView;
 
 import org.evolution.dancingstar.R;
 
-import java.util.Calendar;
-import java.util.Date;
-
 public class LearnActivity extends AppCompatActivity {
 
     private VideoView mVideoView;
