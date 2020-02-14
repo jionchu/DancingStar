@@ -1,7 +1,8 @@
 ## Naver AI Burning Day
-## Team. Evolution
 
-# Dancing Star:
+
+# Dancing Star
+## by Team.Evolution
 
 ### 이 어플리케이션은 K-POP 아이돌의 핵심 안무와, 사용자가 추는 안무의 정확도를 비교분석하여 점수를 측정해주는 어플입니다.
 #### 사용한 API는 '__Clova Face Recognition__'과 '__Pose Estimation__'입니다. 
