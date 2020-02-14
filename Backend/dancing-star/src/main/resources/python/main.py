@@ -334,10 +334,10 @@ def main(pose1, pose2, face1, face2):
     accuracy = accuracy(leg_score, arm_score, dist_score)
     consistency = consistency(similarity)
 
-    print("h1 : ", h1)
-    print("h2 : ", h2)
-    print("accuracy : ", accuracy)
-    print("consistency : ", consistency)
+    print("h1:", h1)
+    print("h2:", h2)
+    print("accuracy:", accuracy)
+    print("consistency:", consistency)
     
         
 if __name__ == '__main__':

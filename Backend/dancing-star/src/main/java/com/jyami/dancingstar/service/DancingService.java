@@ -10,6 +10,7 @@ import com.jyami.dancingstar.exception.DancingException;
 import com.jyami.dancingstar.exception.PythonException;
 import com.jyami.dancingstar.repository.DancingRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,12 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.jyami.dancingstar.dto.dacing.DanceScoreResDto.getFromAccuracy;
 import static com.jyami.dancingstar.parsing.DancingParsing.*;
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 /**
  * Created by jyami on 2020/02/13
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class DancingService {
 
@@ -35,7 +39,7 @@ public class DancingService {
     private final PythonExeService pythonExeService;
     private final DancingRepository dancingRepository;
 
-    private static String USER_VIDEO = "user_video/";
+    private static String USER_VIDEO = "src/main/resources/user_video/";
 
     public DanceScoreResDto getDancingScore(MultipartFile file, String nickName, String dancingId) throws IOException {
 
@@ -69,9 +73,12 @@ public class DancingService {
     }
 
     public String saveLocalFile(MultipartFile file, String nickName) throws IOException {
+        log.info(file.toString());
         InputStream inputStream = file.getInputStream();
-        File localSaveFile = new File(USER_VIDEO + nickName + LocalTime.now().toString());
-        FileUtils.copyInputStreamToFile(inputStream, localSaveFile);
+
+        File localSaveFile = new File(USER_VIDEO + nickName + LocalTime.now().toString()+".mp4");
+        copyInputStreamToFile(inputStream, localSaveFile);
+        log.info(localSaveFile.getAbsolutePath());
         return localSaveFile.getPath();
     }
 
@@ -133,12 +140,22 @@ public class DancingService {
         return saveDanceReqDto.toDomain(allConsistencyImageScore, allAccuracyImageScore);
     }
 
-    private List<DancingSpot> getAllAccuracyImageScore(String originVideo, String frameNumbers) throws IOException {
-        String imagesFromVideo = pythonExeService.getImagesFromVideo(originVideo, frameNumbers);// image 파일들 생성
-        List<String> strings = stringToStringList(imagesFromVideo);
-        return strings.stream()
-                .map(t -> getOriginDanceData(t, getTimeFromPath(t)))
+    private List<DancingSpot> getAllAccuracyImageScore(String originVideo, String frameNumbers) {
+        splitComma(frameNumbers).stream()
+                .map(x -> {
+                    try {
+                        return pythonExeService.getImagesFromVideo(originVideo, x);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new PythonException(e.getMessage());
+                    }
+                })
+                .map(string -> DanceScoreResDto.getFromAccuracy(string))
                 .collect(Collectors.toList());
+
+        //TODO
+
+        return null;
     }
 
     private List<DancingSpot> getAllConsistencyImageScore(String originVideo) throws IOException {
