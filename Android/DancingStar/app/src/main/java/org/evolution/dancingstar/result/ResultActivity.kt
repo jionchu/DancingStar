@@ -15,6 +15,7 @@ import java.lang.reflect.Method
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import org.evolution.dancingstar.nickname.MyPreference
 
 class ResultActivity : AppCompatActivity() {
 
@@ -29,13 +30,14 @@ class ResultActivity : AppCompatActivity() {
 
         rankingAdapter = RankingAdapter(this, ranking)
         listview_ranking.adapter = rankingAdapter
+
+        val myPreference = MyPreference(this)
+
         val myJson = JSONObject()
         val requestBody = myJson.toString()
 
-        // TODO
-
         //score 가져오기
-        /*val url = "http://10.83.32.245:9090/score"
+        val url = "http://10.83.32.245:9090/dancing/score_mock/"+ myPreference.getUsername();
 
         val testRequest = object : StringRequest(Method.GET, url ,
                 Response.Listener { response ->
@@ -69,7 +71,7 @@ class ResultActivity : AppCompatActivity() {
             }
         }
 
-        Volley.newRequestQueue(this).add(testRequest)*/
+        Volley.newRequestQueue(this).add(testRequest)
 
 
 
