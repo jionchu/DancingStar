@@ -9,5 +9,9 @@ import java.util.List;
  * Created by jyami on 2020/02/14
  */
 public interface RankingRepository extends MongoRepository<Ranking, String> {
-    List<Ranking> findTopBy10OOrderByTotalScore();
+    List<Ranking> findAllByOrderByTotalScore();
+
+//    List<Ranking> findTopBy10OrderByTotalScore();
+
+
 }

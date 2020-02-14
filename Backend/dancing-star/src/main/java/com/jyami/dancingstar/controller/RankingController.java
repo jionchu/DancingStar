@@ -9,18 +9,16 @@ import com.jyami.dancingstar.service.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /**
  * Created by jyami on 2020/02/11
  */
-@RestController("ranking")
+@RestController()
 @RequiredArgsConstructor
+@RequestMapping("ranking")
 public class RankingController {
 
     private final RankingService rankingService;

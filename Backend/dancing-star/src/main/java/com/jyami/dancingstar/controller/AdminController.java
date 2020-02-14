@@ -10,17 +10,15 @@ import com.jyami.dancingstar.service.NcloudAPIService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 /**
  * Created by jyami on 2020/02/11
  */
-@RestController("admin")
+@RestController()
+@RequestMapping("admin")
 @RequiredArgsConstructor
 public class AdminController {
 

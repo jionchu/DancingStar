@@ -21,7 +21,7 @@ public class AdviceController {
     public ResponseEntity<ResponseDto> handleIOException(IOException ex) {
         ex.printStackTrace();
         return ResponseEntity.ok() // 501
-                .body(ResponseDto.of(HttpStatus.NOT_IMPLEMENTED,"local io 처리중 에러 " + ex.getMessage()));
+                .body(ResponseDto.of(HttpStatus.NOT_IMPLEMENTED,"local IO 처리중 에러 " + ex.getMessage()));
     }
 
     @ExceptionHandler(DancingException.class)
