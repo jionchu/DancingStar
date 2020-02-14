@@ -17,23 +17,25 @@ import java.io.IOException;
 /**
  * Created by jyami on 2020/02/11
  */
-@RestController
+@RestController()
+@RequestMapping("dancing")
 @RequiredArgsConstructor
 public class DancingController {
 
     private final DancingService dancingService;
 
-    @RequestMapping(path = "/score", method = RequestMethod.POST,
+    @RequestMapping(path = "score_test", method = RequestMethod.POST,
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity testFileLocalSave(
             @RequestParam("file") MultipartFile file, @RequestParam("nickName") String nickName,
             @RequestParam("dancingId") String dancingId) throws IOException {
 
         String s = dancingService.saveLocalFile(file, nickName);
-        return ResponseEntity.ok().body(s);
+        ResponseDto<String> dancing = ResponseDto.of(HttpStatus.OK, "서버 로컬 저장 완료", s);
+        return ResponseEntity.ok().body(dancing);
     }
 
-    @RequestMapping(path = "/score", method = RequestMethod.POST,
+    @RequestMapping(path = "score", method = RequestMethod.POST,
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity getUserScore(
             @RequestParam("file") MultipartFile file, @RequestParam("nickName") String nickName,

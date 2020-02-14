@@ -341,6 +341,10 @@ public class DanceActivity extends AppCompatActivity {
         }
         tryPostVideo(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + "record.mp4");
 
+        Intent intent = new Intent(this,ResultActivity.class);
+        startActivity(intent);
+        finish();
+
     }
 
     private File getOutputMediaFile(){

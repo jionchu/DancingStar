@@ -20,9 +20,17 @@ public class DancingParsing {
                 .collect(Collectors.toList());
     }
 
-    public static String stringListToString(List<String> strings){
-        return strings.stream()
-                .collect(Collectors.joining(","));
+    public static String getKey(String parsing){
+        return parsing.split(":")[0];
+    }
+
+    public static String getValue(String parsing){
+        return parsing.split(":")[1];
+    }
+
+    public static List<String> splitComma(String strings){
+        return Arrays.stream(strings.split(","))
+                .collect(Collectors.toList());
     }
 
     public static String getTimeFromPath(String path){
