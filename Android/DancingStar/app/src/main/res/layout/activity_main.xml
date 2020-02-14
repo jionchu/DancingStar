@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".main.MainActivity"
     android:orientation="vertical"
-    android:background="@color/colorWhite">
+    android:background="@color/colorBlack">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -17,20 +17,23 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
             app:contentInsetStart="0dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:background="@color/colorWhite">
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dance List"
-                android:textSize="20dp"
-                android:textStyle="bold"
                 android:layout_marginLeft="10dp"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:fontFamily="@font/extraboldnanumsquareround"
+                android:paddingBottom="10dp"
+                android:paddingTop="20dp"
+                android:text="Dance List"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="40dp"
+                android:textStyle="bold" />
 
         </android.support.v7.widget.Toolbar>
 
@@ -50,9 +53,11 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="10dp">
 
-                <VideoView
-                    android:layout_width="200dp"
+                <ImageView
+                    android:id="@+id/main_iv_album"
+                    android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:src="@drawable/album_cover_gasina"
                     android:background="@color/colorPrimaryDark"/>
 
                 <LinearLayout
@@ -74,9 +79,10 @@
                             android:textColor="@color/colorBlack"/>
 
                         <TextView
+                            android:id="@+id/main_tv_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="아무노래"
+                            android:text="가시나"
                             android:layout_marginLeft="5dp"/>
 
                     </LinearLayout>
@@ -94,9 +100,10 @@
                             android:textColor="@color/colorBlack"/>
 
                         <TextView
+                            android:id="@+id/main_tv_artist"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="지코(ZICO)"
+                            android:text="선미"
                             android:layout_marginLeft="5dp"/>
 
                     </LinearLayout>
@@ -109,11 +116,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="최고스코어"
+                            android:text="최고점수"
                             android:textStyle="bold"
                             android:textColor="@color/colorBlack"/>
 
                         <TextView
+                            android:id="@+id/main_tv_best_score"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="99"
@@ -134,6 +142,7 @@
                             android:textColor="@color/colorBlack"/>
 
                         <TextView
+                            android:id="@+id/main_tv_winner"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Nickname"
@@ -156,20 +165,24 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Learn Dance"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/regularnanumsquareround"
                     android:textStyle="bold"
                     android:textColor="@color/colorWhite"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/colorPrimaryDark"
                     android:layout_marginRight="5dp"/>
 
                 <Button
-                    android:id="@+id/main_btn_start"
+                    android:id="@+id/main_btn_dance"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Let's Dance"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/regularnanumsquareround"
                     android:textStyle="bold"
                     android:textColor="@color/colorWhite"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/colorPrimaryDark"
                     android:layout_marginLeft="5dp"/>
 
             </LinearLayout>
@@ -193,7 +206,8 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/main_recycler_dance"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                tools:listitem="@layout/item_main_dance">
 
             </android.support.v7.widget.RecyclerView>
 
