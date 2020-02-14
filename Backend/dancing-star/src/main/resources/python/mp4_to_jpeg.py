@@ -5,13 +5,14 @@ import sys
 def main(video_path, option): #dancing.mp4
 
     # Read the video from specified path
-    cam = cv2.VideoCapture("src/main/resources/video/" + video_path)
+    cam = cv2.VideoCapture("../video/" + video_path)
+#         cam = cv2.VideoCapture("src/main/resources/video/" + video_path)
     fps = round(cam.get(cv2.CAP_PROP_FPS))
 
     try:
         # creating a folder named data
-        if not os.path.exists('src/main/resources/images'):
-            os.makedirs('src/main/resources/images')
+        if not os.path.exists('../images'):
+            os.makedirs('../images')
 
     # if not created then raise error
     except OSError:
@@ -21,7 +22,7 @@ def main(video_path, option): #dancing.mp4
     currentframe = 0
 
 
-    if option is not None:
+    if option is not "n":
         option = option.split(',')
     i = 0
     flag = True
@@ -33,7 +34,7 @@ def main(video_path, option): #dancing.mp4
             break
 
         save = False
-        if option is None:
+        if option is "n":
             if currentframe % fps == 0:
                 save = True
 
@@ -46,7 +47,7 @@ def main(video_path, option): #dancing.mp4
 
         if save:
             # if video is still left continue creating images
-            name = 'src/main/resources/images/image-frame' + str(currentframe) + '.jpg'
+            name = '../images/image-frame' + str(currentframe) + '.jpg'
             print(name)
             cv2.imwrite(name, frame)
             currentframe += 1
