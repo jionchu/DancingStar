@@ -22,7 +22,7 @@ public class RankingService {
     private final RankingRepository rankingRepository;
 
     public List<RankingListResDto> getRankingList(){
-        return rankingRepository.findAllByOrderByTotalScore()
+        return rankingRepository.findAllByOrderByTotalScoreDesc()
                 .stream()
                 .map(RankingListResDto::of)
                 .collect(Collectors.toList());
